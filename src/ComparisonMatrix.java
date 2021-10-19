@@ -67,8 +67,9 @@ public class ComparisonMatrix {
             double c = 0;
             int delta = 0;
             if (j == i + 1){
-                b = LingusticTermTriNumber.get(s1[1])[1];
+                b = LingusticTermTriNumber.get(LingusticTerms.values()[i].toString())[1];
                 c = LingusticTermTriNumber.get(LingusticTerms.values()[i+1].toString())[1];
+                return new double[]{a,b,c,d};
             }
             else if ((i + j) % 2 == 0){
                 delta = (i + j) / 2;
