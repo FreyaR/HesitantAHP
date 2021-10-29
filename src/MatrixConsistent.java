@@ -47,6 +47,7 @@ public class MatrixConsistent {
         double maxEigenNumber = getMaxEigenNumber(normalizedWeightMatrix, mergeColMatrix);
         double CI = (maxEigenNumber - n) / (n - 1);
         double CR = CI / RI[n-1];
+        System.out.println(CR);
         if (CR <= 0.1){
             return true;
         }else {

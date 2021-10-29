@@ -31,66 +31,78 @@ public class ComparisonMatrix {
         VHI,
         AHI
     }
+    private boolean isContains(String s){
+        for (LingusticTerms terms : LingusticTerms.values()) {
+            if (terms.name().equals(s)){
+                return true;
+            }
+        }
+        return false;
+    }
     public double[] generateEvenlope(String s){
 
-        String pattern = "Between.*And.*";
+        String pattern = ".*-.*";
+        String[] s1 = new String[2];
         if (s.equals("EE")){
             return new double[]{1.0000, 1.0000, 1.0000, 1.0000};
         }
         else if (Pattern.matches(pattern,s)){
-            String[] s1 = s.split(" ");
+            s1 = s.split("-");
+        }
+        else if (isContains(s)){
+            s1[0] = s;
+            s1[1] = s;
+        }else {
+            return null;
+        }
+        int i = LingusticTerms.valueOf(s1[0]).ordinal();
+        int j = LingusticTerms.valueOf(s1[1]).ordinal();
+        if (i > j){
+            int tmp = i;
+            i = j;
+            j = tmp;
+        }
+        double[] L = LingusticTermTriNumber.get(LingusticTerms.values()[i].toString());
+        double[] R = LingusticTermTriNumber.get(LingusticTerms.values()[j].toString());
+        double a = L[0];
+        double d = R[2];
+        List<Double> tempC = new ArrayList<>();
+        for (int k = j; k >= i ; k--) {
+            tempC.add(LingusticTermTriNumber.get(LingusticTerms.values()[k].toString())[1]);
+        }
+        List<Double> tempB = new ArrayList<>();
+        for (int k = i; k <= j ; k++) {
+            tempB.add(LingusticTermTriNumber.get(LingusticTerms.values()[k].toString())[1]);
+        }
+        int g = LingusticTerms.values().length - 1;
+        double a1 = ((j-i) - 1d) / (g - 1d);
+        double a2 = (g - (j-i)) / (g - 1d);
 
-            int i = LingusticTerms.valueOf(s1[1]).ordinal();
-            int j = LingusticTerms.valueOf(s1[3]).ordinal();
-            if (i > j){
-                int tmp = i;
-                i = j;
-                j = tmp;
-            }
-            double[] L = LingusticTermTriNumber.get(LingusticTerms.values()[i].toString());
-            double[] R = LingusticTermTriNumber.get(LingusticTerms.values()[j].toString());
-            double a = L[0];
-            double d = R[2];
-            List<Double> tempC = new ArrayList<>();
-            for (int k = j; k >= i ; k--) {
-                tempC.add(LingusticTermTriNumber.get(LingusticTerms.values()[k].toString())[1]);
-            }
-            List<Double> tempB = new ArrayList<>();
-            for (int k = i; k <= j ; k++) {
-                tempB.add(LingusticTermTriNumber.get(LingusticTerms.values()[k].toString())[1]);
-            }
-            int g = LingusticTerms.values().length - 1;
-            double a1 = ((j-i) - 1d) / (g - 1d);
-            double a2 = (g - (j-i)) / (g - 1d);
-
-            double b = 0;
-            double c = 0;
-            int delta = 0;
-            if (j == i + 1){
-                b = LingusticTermTriNumber.get(LingusticTerms.values()[i].toString())[1];
-                c = LingusticTermTriNumber.get(LingusticTerms.values()[i+1].toString())[1];
-                return new double[]{a,b,c,d};
-            }
-            else if ((i + j) % 2 == 0){
-                delta = (i + j) / 2;
-
-            }
-            else if ((i + j) % 2 == 1){
-                delta = (i + j + 1) / 2;
-            }
-            double[] w1 = initWeightOne(a2, j - delta + 1);
-            double[] w2 = initWeightTwo(a1, j - delta + 1);
-
-            for (int k = 0; k <= j - delta; k++) {
-                b += tempB.get(k) * w2[k];
-            }
-            for (int k = 0; k <= j - delta; k++) {
-                c += tempC.get(k) * w1[k];
-            }
+        double b = 0;
+        double c = 0;
+        int delta = 0;
+        if (j == i + 1){
+            b = LingusticTermTriNumber.get(LingusticTerms.values()[i].toString())[1];
+            c = LingusticTermTriNumber.get(LingusticTerms.values()[i+1].toString())[1];
             return new double[]{a,b,c,d};
+        }
+        else if ((i + j) % 2 == 0){
+            delta = (i + j) / 2;
 
         }
-        return null;
+        else if ((i + j) % 2 == 1){
+            delta = (i + j + 1) / 2;
+        }
+        double[] w1 = initWeightOne(a2, j - delta + 1);
+        double[] w2 = initWeightTwo(a1, j - delta + 1);
+
+        for (int k = 0; k <= j - delta; k++) {
+            b += tempB.get(k) * w2[k];
+        }
+        for (int k = 0; k <= j - delta; k++) {
+            c += tempC.get(k) * w1[k];
+        }
+        return new double[]{a,b,c,d};
     }
 
     public List<List<double[]>> getFuzzyComparisonMatrix(String[][] linguisticMatrix){
@@ -141,26 +153,6 @@ public class ComparisonMatrix {
         return res;
     }
     public static void main(String[] args) {
-        ComparisonMatrix matrix = new ComparisonMatrix();
-        String[][] linguisticTerms = new String[][]{
-                {"EE","Between WLI And EE","Between WLI And EE"},
-                {"Between WLI And EE","EE","Between WLI And EE"},
-                {"Between WLI And EE","Between WLI And EE","EE"}};
-        List<List<double[]>> fuzzyComparisonMatrix = matrix.getFuzzyComparisonMatrix(linguisticTerms);
-        for (List<double[]> comparisonMatrix : fuzzyComparisonMatrix) {
-            for (double[] doubles : comparisonMatrix) {
-                System.out.print(Arrays.toString(doubles));
-            }
-            System.out.println();
-        }
-        double[][] crispyMatrix = matrix.getCrispyMatrix(fuzzyComparisonMatrix);
-        for (int i = 0; i < crispyMatrix.length; i++) {
-            for (int j = 0; j < crispyMatrix[0].length; j++) {
-                System.out.print(crispyMatrix[i][j] + " ");
-            }
-            System.out.println();
-        }
-        MatrixConsistent matrixConsistent = new MatrixConsistent();
-        System.out.println(matrixConsistent.ifConsistent(crispyMatrix, crispyMatrix.length));
+
     }
 }
