@@ -56,6 +56,14 @@ public class IndexWeight {
         double[] res = new double[row];
         for (int i = 0; i < row; i++) {
             res[i] = (weightMatrix[i][0] + 2 * weightMatrix[i][1] + 2 * weightMatrix[i][2] + weightMatrix[1][3]) / 6;
+            System.out.println(res[i]);
+        }
+        double sum = 0;
+        for (int i = 0; i < res.length; i++) {
+            sum += res[i];
+        }
+        for (int i = 0; i < res.length; i++) {
+            res[i] /= sum;
         }
         return res;
     }
