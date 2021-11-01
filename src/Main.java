@@ -1,3 +1,4 @@
+import javax.xml.crypto.Data;
 import java.util.Arrays;
 import java.util.List;
 
@@ -6,6 +7,8 @@ public class Main {
         ComparisonMatrix matrix = new ComparisonMatrix();
         MatrixConsistent matrixConsistent = new MatrixConsistent();
         IndexWeight indexWeight = new IndexWeight();
+        DataSolve dataSolve = new DataSolve();
+        Calculate calculate = new Calculate();
         //destructive
         String[][] linguisticTerms1 = new String[][]{
                 {"EE","EE","ALI","ELI-WLI","ELI-WLI","ELI-WLI","VLI"},
@@ -37,7 +40,8 @@ public class Main {
             }
             System.out.println();
         }
-        for (double weight : indexWeight.getNormalizedWeight(weightMatrix1)) {
+        double[] weight1 = indexWeight.getNormalizedWeight(weightMatrix1);
+        for (double weight : weight1) {
             System.out.println(weight + " ");
         }
         System.out.println();
@@ -70,7 +74,8 @@ public class Main {
             }
             System.out.println();
         }
-        for (double weight : indexWeight.getNormalizedWeight(weightMatrix2)) {
+        double[] weight2 = indexWeight.getNormalizedWeight(weightMatrix2);
+        for (double weight : weight2) {
             System.out.println(weight + " ");
         }
         System.out.println();
@@ -96,6 +101,7 @@ public class Main {
             System.out.println();
         }
         System.out.println(matrixConsistent.ifConsistent(crispyMatrix3, crispyMatrix3.length));
+
         double[][] weightMatrix3 = indexWeight.getWeightMatrix(fuzzyComparisonMatrix3);
         for (int i = 0; i < weightMatrix3.length; i++) {
             for (int j = 0; j < weightMatrix3[0].length; j++) {
@@ -104,7 +110,8 @@ public class Main {
             System.out.println();
         }
         System.out.println();
-        for (double weight : indexWeight.getNormalizedWeight(weightMatrix3)) {
+        double[] weight3 = indexWeight.getNormalizedWeight(weightMatrix3);
+        for (double weight : weight3) {
             System.out.println(weight + " ");
         }
         System.out.println();
@@ -134,14 +141,65 @@ public class Main {
         double[][] weightMatrix4 = indexWeight.getWeightMatrix(fuzzyComparisonMatrix4);
         for (int i = 0; i < weightMatrix4.length; i++) {
             for (int j = 0; j < weightMatrix4[0].length; j++) {
-                System.out.print(weightMatrix4[i][j] + " ");
+                System.out.printf("%.4f", weightMatrix4[i][j]);
+                System.out.print(" ");
             }
             System.out.println();
         }
         System.out.println();
-        for (double weight : indexWeight.getNormalizedWeight(weightMatrix4)) {
-            System.out.println(weight + " ");
+        double[] pgWeight = indexWeight.getNormalizedWeight(weightMatrix4);
+        for (double weight : pgWeight) {
+            System.out.printf("%.4f",weight);
+            System.out.print(" ");
         }
         System.out.println();
+
+        //datasolve
+        String[] s = new String[]{"FS","FS","SS-FS","SS","FS","SS","VS","FS","SW","SW","0.8","1","0.9"};
+        double[][] envelopeVector = dataSolve.generateFuzzyEnvelopeVector(s);
+        for (double[] num : envelopeVector) {
+            for (double v : num) {
+                System.out.printf("%.4f",v);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+        double[] crispyNumber = dataSolve.getCrispyNumber(envelopeVector);
+        for (double v : crispyNumber) {
+            System.out.printf("%.4f",v);
+            System.out.print(" ");
+        }
+        System.out.println();
+        //calculate data
+        String[] s1 = {"FS", "FS", "SS-FS", "SS", "FS", "SS", "VS"};
+        double[] crispyNumber1 = dataSolve.getCrispyNumber(dataSolve.generateFuzzyEnvelopeVector(s1));
+        String[] s2 = {"FS","SW","SW"};
+        double[] crispyNumber2 = dataSolve.getCrispyNumber(dataSolve.generateFuzzyEnvelopeVector(s2));
+        String[] s3 = {"0.8","1","0.9"};
+        double[] crispyNumber3 = dataSolve.getCrispyNumber(dataSolve.generateFuzzyEnvelopeVector(s3));
+        System.out.println("pg1_hfwa:  "+calculate.HFWA(crispyNumber1, weight1));
+        System.out.println("pg1_hgwa:  "+calculate.HGWA(crispyNumber1, weight1));
+
+        System.out.println("pg2_hfwa:  "+calculate.HFWA(crispyNumber2, weight2));
+        System.out.println("pg2_hgwa:  "+calculate.HGWA(crispyNumber2, weight2));
+
+        System.out.println("pg3_hfwa:  "+calculate.HFWA(crispyNumber3, weight3));
+        System.out.println("pg3_hgwa:  "+calculate.HGWA(crispyNumber3, weight3));
+
+        double[] pgData_hfwa = new double[3];
+        pgData_hfwa[0] = calculate.HFWA(crispyNumber1,weight1);
+        pgData_hfwa[1] = calculate.HFWA(crispyNumber2,weight2);
+        pgData_hfwa[2] = calculate.HFWA(crispyNumber3,weight3);
+
+        double[] pgData_hgwa = new double[3];
+        pgData_hgwa[0] = calculate.HGWA(crispyNumber1,weight1);
+        pgData_hgwa[1] = calculate.HGWA(crispyNumber2,weight2);
+        pgData_hgwa[2] = calculate.HGWA(crispyNumber3,weight3);
+
+        System.out.println("atom_score_hfwa:  "+ calculate.HFWA(pgData_hfwa,pgWeight));
+        System.out.println("atom_score_hgwa:  "+ calculate.HGWA(pgData_hgwa,pgWeight));
+
+
+
     }
 }

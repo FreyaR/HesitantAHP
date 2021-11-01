@@ -56,7 +56,8 @@ public class IndexWeight {
         double[] res = new double[row];
         for (int i = 0; i < row; i++) {
             res[i] = (weightMatrix[i][0] + 2 * weightMatrix[i][1] + 2 * weightMatrix[i][2] + weightMatrix[1][3]) / 6;
-            System.out.println(res[i]);
+            System.out.printf("%.4f",res[i]);
+            System.out.print(" ");
         }
         double sum = 0;
         for (int i = 0; i < res.length; i++) {
@@ -68,44 +69,6 @@ public class IndexWeight {
         return res;
     }
 
-    public static void main(String[] args) {
-        ComparisonMatrix matrix = new ComparisonMatrix();
-        String[][] linguisticTerms = new String[][]{
-                {"EE","Between EHI And WHI","Between EHI And ELI"},
-                {"Between ELI And WLI","EE","Between ELI And WLI"},
-                {"Between EHI And ELI","Between EHI And WHI","EE"}};
-        List<List<double[]>> fuzzyComparisonMatrix = matrix.getFuzzyComparisonMatrix(linguisticTerms);
-        for (List<double[]> comparisonMatrix : fuzzyComparisonMatrix) {
-            for (double[] doubles : comparisonMatrix) {
-                System.out.print(Arrays.toString(doubles));
-            }
-            System.out.println();
-        }
-
-        IndexWeight indexWeight = new IndexWeight();
-
-        double[][] geometricMean = indexWeight.computeGeometricMean(fuzzyComparisonMatrix);
-        for (int i = 0; i < geometricMean.length; i++) {
-            for (int j = 0; j < geometricMean[0].length; j++) {
-                System.out.print(geometricMean[i][j] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-        double[] operatorAdd = indexWeight.computeOperatorAdd(geometricMean);
-        for (int i = 0; i < operatorAdd.length; i++) {
-            System.out.print(operatorAdd[i] + " ");
-        }
-        System.out.println();
-        System.out.println();
-        double[][] weightMatrix = indexWeight.getWeightMatrix(fuzzyComparisonMatrix);
-        for (int i = 0; i < weightMatrix.length; i++) {
-            for (int j = 0; j < weightMatrix[0].length; j++) {
-                System.out.print(weightMatrix[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
 //    private
 
 }
